@@ -1,0 +1,28 @@
+{
+    "name": "WEBREG",
+    "description": "WebReg Enhanced Browser Registration Extension GUI (WEBREG) for UCI WebReg system",
+    "version": "0.2.0",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "./scripts/background.js"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://phet-dev.colorado.edu/html/*",
+                "https://www.baidu.com/",
+                "https://webreg1.reg.uci.edu/*",
+                "https://webreg2.reg.uci.edu/*"
+            ],
+            "js": [
+                "./scripts/main.js"
+            ]
+        }
+    ],
+    "host_permissions": [
+        "https://www.reg.uci.edu/*"
+    ]
+}
