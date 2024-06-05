@@ -1,3 +1,27 @@
+classSchduleForm = new FormData();
+classSchduleForm.append("YearTerm", "");
+classSchduleForm.append("ShowFinals", "on");
+classSchduleForm.append("Breadth", "ANY");
+classSchduleForm.append("Dept", "");
+classSchduleForm.append("CourseNum", "");
+classSchduleForm.append("Division", "ANY");
+classSchduleForm.append("CourseCodes", "");
+classSchduleForm.append("InstrName", "");
+classSchduleForm.append("CourseTitle", "");
+classSchduleForm.append("ClassType", "ALL");
+classSchduleForm.append("Units", "");
+classSchduleForm.append("Modality", "");
+classSchduleForm.append("Days", "");
+classSchduleForm.append("StartTime", "");
+classSchduleForm.append("EndTime", "");
+classSchduleForm.append("MaxCap", "");
+classSchduleForm.append("FullCourses", "ANY");
+classSchduleForm.append("FontSize", "100");
+classSchduleForm.append("CancelledCourses", "Exclude");
+classSchduleForm.append("Bldg", "");
+classSchduleForm.append("Room", "");
+classSchduleForm.append("Submit", "Display Web Results");
+
 function getOptions() {
     htmlContent = "";
     console.log("updateOption");
@@ -56,4 +80,52 @@ function getOptions() {
     });
 }
 
-getOptions();
+function getClasses(term = "2024-92", dept = "COMPSCI") {
+    classSchduleForm.set("YearTerm", term);
+    classSchduleForm.set("Dept", dept);
+    fetch("https://www.reg.uci.edu/perl/WebSoc", {
+        method: 'POST',
+        body: classSchduleForm
+    }).then(function(response) {
+        // When the page is loaded convert it to text
+        return response.text();
+    }).then(function(html) {
+        // get course title
+        courseTitleStart = new RegExp("<td class=\"CourseTitle\".*", "g");
+        courseTitleEnd = new RegExp("<tr class=\"blue-bar\".*", "g");
+        courseList = [];
+        while (html.search(courseTitleStart) != null) {
+            courseTitleStartIndex = html.search(courseTitleStart);
+            courseTitleEndIndex = html.substring(courseTitleStartIndex).search(courseTitleEnd) + courseTitleStartIndex;
+            courseTitle = html.substring(courseTitleStartIndex, courseTitleEndIndex);
+            courseCodePattern = new RegExp(">&nbsp;.*&nbsp;.*&nbsp; <font", "g");
+            courseCodeMath = courseTitle.match(courseCodePattern);
+            if(courseCodeMath == null){break;}
+            courseCodeMath = courseCodeMath[0];
+            courseCode = courseCodeMath.split(" ")[1] + " " + courseCodeMath.split(" ")[3];
+            courseNamePattern = new RegExp("<b>.*</b></font", "g");
+            courseName = courseTitle.match(courseNamePattern)[0].split(">")[1].split("<")[0];
+            console.log(courseCode, courseName);
+            courseInfo = courseTitle.match(new RegExp("nowrap=\"nowrap\">[0-9a-zA-Z-/&]*</td>", "g"));
+            courseSections = []
+            sectionInfo = []
+            for (let i = 0; i < courseInfo.length; i++) {
+                sectionInfo.push(courseInfo[i].split(">")[1].split("<")[0]);
+                if(sectionInfo.length >= 11){
+                    courseSections.push(sectionInfo);
+                    sectionInfo = [];
+                }
+            }
+            course = {};
+            course["code"] = courseCode;
+            course["name"] = courseName;
+            course["sections"] = courseSections;
+            courseList.push(course);
+            html = html.substring(courseTitleEndIndex);
+        }
+    }).catch(function(err) {
+        console.log('Failed to fetch page: ', err);
+    });
+}
+
+getClasses();
