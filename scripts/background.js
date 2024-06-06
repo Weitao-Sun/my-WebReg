@@ -127,7 +127,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 courseList.push(course);
                 html = html.substring(courseTitleEndIndex);
             }
-            sendResponse(courseList);
+            sendResponse({"courses": courseList, "quarter": "2024-92", "dept": "COMPSCI"});
         }).catch(function(err) {
             console.log('Failed to fetch page: ', err);
         });

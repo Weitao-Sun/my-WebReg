@@ -19,7 +19,13 @@
                 "https://webreg2.reg.uci.edu/*"
             ],
             "js": [
-                "./scripts/main.js"
+                "./scripts/main.js",
+                "./scripts/external/jquery/jquery.js",
+                "./scripts/jquery-ui.min.js"
+            ],
+            "css": [
+                "./scripts/jquery-ui.min.css",
+                "./scripts/jquery-ui.structure.min.css"
             ]
         }
     ],
