@@ -107,11 +107,12 @@ function getClasses(term = "2024-92", dept = "COMPSCI") {
             courseName = courseTitle.match(courseNamePattern)[0].split(">")[1].split("<")[0];
             console.log(courseCode, courseName);
             courseInfo = courseTitle.match(new RegExp("nowrap=\"nowrap\">[0-9a-zA-Z-/&]*</td>", "g"));
+            console.log(courseInfo);
             courseSections = []
             sectionInfo = []
             for (let i = 0; i < courseInfo.length; i++) {
                 sectionInfo.push(courseInfo[i].split(">")[1].split("<")[0]);
-                if(sectionInfo.length >= 11){
+                if(sectionInfo.length >= 16){
                     courseSections.push(sectionInfo);
                     sectionInfo = [];
                 }

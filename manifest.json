@@ -14,18 +14,20 @@
         {
             "matches": [
                 "https://phet-dev.colorado.edu/html/*",
-                "https://www.baidu.com/",
                 "https://webreg1.reg.uci.edu/*",
-                "https://webreg2.reg.uci.edu/*"
+                "https://webreg2.reg.uci.edu/*",
+                "https://webreg3.reg.uci.edu/*"
             ],
             "js": [
                 "./scripts/main.js",
                 "./scripts/external/jquery/jquery.js",
-                "./scripts/jquery-ui.min.js"
+                "./scripts/jquery-ui.min.js",
+                "./scripts/Timetables.min.js"
             ],
             "css": [
                 "./scripts/jquery-ui.min.css",
-                "./scripts/jquery-ui.structure.min.css"
+                "./scripts/jquery-ui.structure.min.css",
+                "./scripts/jquery-ui.theme.min.css"
             ]
         }
     ],

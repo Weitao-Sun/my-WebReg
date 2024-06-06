@@ -9,7 +9,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // get course title
         htmlContent = html;
         //console.log(htmlContent);
-        optionsJSON = {};
+        quarterObj = {};
+        classObj = {};
         quarterRangeStart = new RegExp("<select name=\"YearTerm\">", "g");
         quarterRangeEnd = new RegExp("</select>", "g");
         classRangeStart = new RegExp("<select name=\"Dept\">", "g");
@@ -37,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             quarterValue = quarterMatches[i].match(quarterValuePattern)[0].split("\"")[1];
             quarterNamePattern = new RegExp(">.*</option>", "g");
             quarterName = quarterMatches[i].match(quarterNamePattern)[0].split(">")[1].split("<")[0];
-            optionsJSON[quarterValue] = quarterName;
+            quarterObj[quarterValue] = quarterName;
         }
 
         classPattern = new RegExp("<option value=\"[- A-Za-z0-9]*\".*</option>", "g");
@@ -48,9 +49,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             classValue = classMatches[i].match(classValuePattern)[0].split("\"")[1];
             classNamePattern = new RegExp(">.*</option>", "g");
             className = classMatches[i].match(classNamePattern)[0].split(">")[1].split("<")[0];
-            optionsJSON[classValue] = className;
+            classObj[classValue] = className;
         }
-        sendResponse(optionsJSON);
+        sendResponse({"quarters": quarterObj, "classes": classObj});
     }).catch(function(err) {
         console.log('Failed to fetch page: ', err);
     });
@@ -110,12 +111,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 courseNamePattern = new RegExp("<b>.*</b></font", "g");
                 courseName = courseTitle.match(courseNamePattern)[0].split(">")[1].split("<")[0];
                 //console.log(courseCode, courseName);
-                courseInfo = courseTitle.match(new RegExp("nowrap=\"nowrap\">[0-9a-zA-Z-/&]*</td>", "g"));
+                courseInfo = courseTitle.match(new RegExp("nowrap=\"nowrap\">.{1,40}</td>", "g"));
+                //console.log(courseInfo.length + " ++ + ", courseInfo);
                 courseSections = []
                 sectionInfo = []
                 for (let i = 0; i < courseInfo.length; i++) {
                     sectionInfo.push(courseInfo[i].split(">")[1].split("<")[0]);
-                    if(sectionInfo.length >= 11){
+                    if(sectionInfo.length >= 14){
                         courseSections.push(sectionInfo);
                         sectionInfo = [];
                     }
@@ -127,7 +129,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 courseList.push(course);
                 html = html.substring(courseTitleEndIndex);
             }
-            sendResponse({"courses": courseList, "quarter": "2024-92", "dept": "COMPSCI"});
+            sendResponse({"courses": courseList, "quarter": request.quarter, "dept": request.dept});
         }).catch(function(err) {
             console.log('Failed to fetch page: ', err);
         });
